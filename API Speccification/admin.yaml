@@ -1,0 +1,97 @@
+swagger: '2.0'
+info:
+  title: CAB System - Admin API
+  description: Swagger API được tạo lại từ SRS CAB System.
+  version: 1.0.0
+host: localhost:8080
+basePath: /api
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/json
+tags:
+- name: Admin
+paths:
+  /admin/actions:
+    post:
+      tags:
+      - Admin
+      summary: Thực hiện thao tác quản trị
+      operationId: adminAction
+      description: UC14 - FR41-FR42
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/AdminActionRequest'
+      responses:
+        '200':
+          description: Thao tác được thực hiện và lưu vết
+        '403':
+          description: Không đủ quyền
+      security:
+      - BearerAuth: []
+  /admin/audit-logs:
+    get:
+      tags:
+      - Admin
+      summary: Kiểm tra nhật ký thao tác
+      operationId: getAuditLogs
+      description: UC14 - FR42
+      responses:
+        '200':
+          description: Danh sách nhật ký
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AuditLog'
+        '403':
+          description: Không đủ quyền
+      security:
+      - BearerAuth: []
+definitions:
+  AdminActionRequest:
+    type: object
+    required:
+    - action_type
+    - target_type
+    properties:
+      action_type:
+        type: string
+      target_type:
+        type: string
+      target_id:
+        type: integer
+        format: int64
+      action_detail:
+        type: string
+  AuditLog:
+    type: object
+    properties:
+      audit_id:
+        type: integer
+        format: int64
+      operator_id:
+        type: integer
+        format: int64
+      action_type:
+        type: string
+      target_type:
+        type: string
+      target_id:
+        type: integer
+        format: int64
+      action_detail:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'Nhập: Bearer <JWT>'
