@@ -1,0 +1,60 @@
+swagger: '2.0'
+info:
+  title: CAB System - Notification Provider API
+  description: Swagger API được tạo lại từ SRS CAB System.
+  version: 1.0.0
+host: localhost:8080
+basePath: /api
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/json
+tags:
+- name: Notification Provider
+paths:
+  /notifications:
+    post:
+      tags:
+      - Notification Provider
+      summary: Gửi thông báo
+      operationId: sendNotification
+      description: UC11 - FR31-FR33
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/NotificationRequest'
+      responses:
+        '201':
+          description: Thông báo được gửi hoặc lỗi được ghi nhận
+      security:
+      - BearerAuth: []
+definitions:
+  NotificationRequest:
+    type: object
+    required:
+    - trip_id
+    - notification_type
+    properties:
+      trip_id:
+        type: integer
+        format: int64
+      customer_id:
+        type: integer
+        format: int64
+      driver_id:
+        type: integer
+        format: int64
+      notification_type:
+        type: string
+      notification_status:
+        type: string
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'Nhập: Bearer <JWT>'
