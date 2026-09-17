@@ -1,0 +1,269 @@
+swagger: '2.0'
+info:
+  title: CAB System - Operator API
+  description: Swagger API được tạo lại từ SRS CAB System.
+  version: 1.0.0
+host: localhost:8080
+basePath: /api
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/json
+tags:
+- name: Operator
+paths:
+  /drivers:
+    post:
+      tags:
+      - Operator
+      summary: Tạo tài khoản tài xế
+      operationId: createDriver
+      description: UC02 - FR08
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/DriverRequest'
+      responses:
+        '201':
+          description: Tạo tài khoản tài xế thành công
+        '400':
+          description: Thông tin chưa đầy đủ
+      security:
+      - BearerAuth: []
+  /operations/trips:
+    get:
+      tags:
+      - Operator
+      summary: Theo dõi các chuyến đang diễn ra
+      operationId: getActiveTrips
+      description: UC13 - FR37-FR38
+      responses:
+        '200':
+          description: Danh sách chuyến
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trip'
+      security:
+      - BearerAuth: []
+  /operations/transactions:
+    get:
+      tags:
+      - Operator
+      summary: Tra cứu lịch sử giao dịch
+      operationId: getTransactions
+      description: UC13 - FR39
+      responses:
+        '200':
+          description: Danh sách giao dịch
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PaymentResult'
+      security:
+      - BearerAuth: []
+  /operations/trips/{tripId}/support:
+    post:
+      tags:
+      - Operator
+      summary: Hỗ trợ xử lý chuyến bị lỗi
+      operationId: supportFailedTrip
+      description: UC13 - FR40
+      parameters:
+      - in: path
+        name: tripId
+        required: true
+        type: integer
+        format: int64
+        description: Mã chuyến
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/SupportRequest'
+      responses:
+        '200':
+          description: Đã tiếp nhận xử lý
+        '403':
+          description: Không đủ quyền
+      security:
+      - BearerAuth: []
+  /reports/operations:
+    get:
+      tags:
+      - Operator
+      summary: Xem báo cáo hoạt động
+      operationId: getOperationsReport
+      description: UC15 - FR43
+      responses:
+        '200':
+          description: Báo cáo hoạt động
+          schema:
+            $ref: '#/definitions/OperationsReport'
+        '403':
+          description: Không có quyền xem báo cáo
+      security:
+      - BearerAuth: []
+  /system/trips/{tripId}/dispatch:
+    post:
+      tags:
+      - Operator
+      summary: Tìm và phân công tài xế
+      operationId: dispatchDriver
+      description: UC05 - FR11-FR13, FR15-FR16. API nội bộ của CAB System.
+      parameters:
+      - in: path
+        name: tripId
+        required: true
+        type: integer
+        format: int64
+        description: Mã chuyến
+      responses:
+        '200':
+          description: Đã gửi yêu cầu đến tài xế phù hợp
+        '404':
+          description: Không tìm được tài xế phù hợp
+      security:
+      - BearerAuth: []
+  /system/trips/{tripId}/fare:
+    post:
+      tags:
+      - Operator
+      summary: Tính cước chuyến đi
+      operationId: calculateFare
+      description: UC09 - FR25. API nội bộ của CAB System.
+      parameters:
+      - in: path
+        name: tripId
+        required: true
+        type: integer
+        format: int64
+        description: Mã chuyến
+      responses:
+        '200':
+          description: Số tiền phải trả
+          schema:
+            $ref: '#/definitions/Trip'
+        '409':
+          description: Chuyến chưa hoàn thành hoặc công thức cước chưa được phê duyệt
+      security:
+      - BearerAuth: []
+definitions:
+  DriverRequest:
+    type: object
+    required:
+    - full_name
+    - phone
+    - vehicle_type
+    - license_plate
+    properties:
+      full_name:
+        type: string
+      phone:
+        type: string
+      vehicle_type:
+        type: string
+      license_plate:
+        type: string
+      account_status:
+        type: string
+      availability_status:
+        type: string
+  Trip:
+    type: object
+    properties:
+      trip_id:
+        type: integer
+        format: int64
+      customer_id:
+        type: integer
+        format: int64
+      pickup_address:
+        type: string
+      pickup_latitude:
+        type: number
+        format: double
+      pickup_longitude:
+        type: number
+        format: double
+      destination_address:
+        type: string
+      destination_latitude:
+        type: number
+        format: double
+      destination_longitude:
+        type: number
+        format: double
+      requested_vehicle_type:
+        type: string
+      trip_status:
+        type: string
+      fare_amount:
+        type: number
+        format: double
+      requested_at:
+        type: string
+        format: date-time
+      completed_at:
+        type: string
+        format: date-time
+      cancelled_at:
+        type: string
+        format: date-time
+  PaymentResult:
+    type: object
+    properties:
+      payment_id:
+        type: integer
+        format: int64
+      trip_id:
+        type: integer
+        format: int64
+      payment_method:
+        type: string
+      amount:
+        type: number
+        format: double
+      payment_status:
+        type: string
+      provider_reference:
+        type: string
+      retry_count:
+        type: integer
+      paid_at:
+        type: string
+        format: date-time
+  SupportRequest:
+    type: object
+    required:
+    - action_detail
+    properties:
+      action_detail:
+        type: string
+  OperationsReport:
+    type: object
+    properties:
+      trip_count:
+        type: integer
+      revenue:
+        type: number
+        format: double
+      completion_rate:
+        type: number
+        format: double
+      cancellation_rate:
+        type: number
+        format: double
+      driver_effectiveness:
+        type: number
+        format: double
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'Nhập: Bearer <JWT>'
