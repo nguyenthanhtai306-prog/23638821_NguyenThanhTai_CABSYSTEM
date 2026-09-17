@@ -1,0 +1,227 @@
+swagger: '2.0'
+info:
+  title: CAB System - Driver API
+  description: Swagger API được tạo lại từ SRS CAB System.
+  version: 1.0.0
+host: localhost:8080
+basePath: /api
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/json
+tags:
+- name: Driver
+paths:
+  /drivers/{driverId}:
+    put:
+      tags:
+      - Driver
+      summary: Cập nhật hồ sơ và phương tiện tài xế
+      operationId: updateDriver
+      description: UC02 - FR08-FR09
+      parameters:
+      - in: path
+        name: driverId
+        required: true
+        type: integer
+        format: int64
+        description: Mã tài xế
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/DriverRequest'
+      responses:
+        '200':
+          description: Cập nhật thành công
+        '400':
+          description: Thông tin chưa đầy đủ
+      security:
+      - BearerAuth: []
+  /drivers/{driverId}/availability:
+    put:
+      tags:
+      - Driver
+      summary: Cập nhật trạng thái sẵn sàng
+      operationId: updateDriverAvailability
+      description: UC03 - FR10
+      parameters:
+      - in: path
+        name: driverId
+        required: true
+        type: integer
+        format: int64
+        description: Mã tài xế
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/AvailabilityRequest'
+      responses:
+        '200':
+          description: Cập nhật trạng thái thành công
+        '400':
+          description: Tài khoản không hợp lệ
+      security:
+      - BearerAuth: []
+  /trips/{tripId}/response:
+    post:
+      tags:
+      - Driver
+      summary: Chấp nhận hoặc từ chối chuyến
+      operationId: respondToTrip
+      description: UC06 - FR14-FR17
+      parameters:
+      - in: path
+        name: tripId
+        required: true
+        type: integer
+        format: int64
+        description: Mã chuyến
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/DriverResponseRequest'
+      responses:
+        '200':
+          description: Đã ghi nhận phản hồi
+        '409':
+          description: Chuyến đã được gán cho tài xế khác
+      security:
+      - BearerAuth: []
+  /trips/{tripId}/status:
+    put:
+      tags:
+      - Driver
+      summary: Cập nhật trạng thái chuyến
+      operationId: updateTripStatus
+      description: UC07 - FR20-FR23
+      parameters:
+      - in: path
+        name: tripId
+        required: true
+        type: integer
+        format: int64
+        description: Mã chuyến
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/TripStatusRequest'
+      responses:
+        '200':
+          description: Trạng thái được cập nhật
+        '400':
+          description: Sai trình tự trạng thái
+      security:
+      - BearerAuth: []
+  /drivers/{driverId}/locations:
+    post:
+      tags:
+      - Driver
+      summary: Cập nhật vị trí tài xế
+      operationId: updateDriverLocation
+      description: UC08 - FR19
+      parameters:
+      - in: path
+        name: driverId
+        required: true
+        type: integer
+        format: int64
+        description: Mã tài xế
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LocationRequest'
+      responses:
+        '201':
+          description: Vị trí được lưu
+        '400':
+          description: Dữ liệu vị trí không hợp lệ
+      security:
+      - BearerAuth: []
+definitions:
+  DriverRequest:
+    type: object
+    required:
+    - full_name
+    - phone
+    - vehicle_type
+    - license_plate
+    properties:
+      full_name:
+        type: string
+      phone:
+        type: string
+      vehicle_type:
+        type: string
+      license_plate:
+        type: string
+      account_status:
+        type: string
+      availability_status:
+        type: string
+  AvailabilityRequest:
+    type: object
+    required:
+    - availability_status
+    properties:
+      availability_status:
+        type: string
+        enum:
+        - AVAILABLE
+        - UNAVAILABLE
+  DriverResponseRequest:
+    type: object
+    required:
+    - driver_id
+    - response_status
+    properties:
+      driver_id:
+        type: integer
+        format: int64
+      response_status:
+        type: string
+        enum:
+        - ACCEPTED
+        - REJECTED
+  TripStatusRequest:
+    type: object
+    required:
+    - trip_status
+    properties:
+      trip_status:
+        type: string
+        enum:
+        - RECEIVED
+        - SEARCHING_DRIVER
+        - DRIVER_ASSIGNED
+        - DRIVER_ARRIVED
+        - PASSENGER_PICKED_UP
+        - IN_PROGRESS
+        - COMPLETED
+  LocationRequest:
+    type: object
+    required:
+    - latitude
+    - longitude
+    properties:
+      latitude:
+        type: number
+        format: double
+      longitude:
+        type: number
+        format: double
+      recorded_at:
+        type: string
+        format: date-time
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'Nhập: Bearer <JWT>'
