@@ -1,0 +1,359 @@
+swagger: '2.0'
+info:
+  title: CAB System - Customer API
+  description: Swagger API được tạo lại từ SRS CAB System.
+  version: 1.0.0
+host: localhost:8080
+basePath: /api
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/json
+tags:
+- name: Customer
+paths:
+  /customers/register:
+    post:
+      tags:
+      - Customer
+      summary: Đăng ký tài khoản khách hàng
+      operationId: registerCustomer
+      description: UC01 - FR01
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/CustomerRegisterRequest'
+      responses:
+        '201':
+          description: Tài khoản được tạo
+        '400':
+          description: Thông tin không hợp lệ
+  /customers/login:
+    post:
+      tags:
+      - Customer
+      summary: Đăng nhập khách hàng
+      operationId: loginCustomer
+      description: UC01 - FR02
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/LoginRequest'
+      responses:
+        '200':
+          description: Đăng nhập thành công
+        '401':
+          description: Xác thực không thành công
+  /customers/{customerId}:
+    put:
+      tags:
+      - Customer
+      summary: Cập nhật thông tin khách hàng
+      operationId: updateCustomer
+      description: UC01 - FR03
+      parameters:
+      - in: path
+        name: customerId
+        required: true
+        type: integer
+        format: int64
+        description: Mã khách hàng
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/CustomerUpdateRequest'
+      responses:
+        '200':
+          description: Cập nhật thành công
+        '400':
+          description: Thông tin không hợp lệ
+      security:
+      - BearerAuth: []
+  /trips:
+    post:
+      tags:
+      - Customer
+      summary: Tạo yêu cầu đặt chuyến
+      operationId: createTrip
+      description: UC04 - FR04-FR07
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/TripRequest'
+      responses:
+        '201':
+          description: Yêu cầu được tiếp nhận
+          schema:
+            $ref: '#/definitions/Trip'
+        '400':
+          description: Thiếu hoặc sai thông tin
+      security:
+      - BearerAuth: []
+  /trips/{tripId}:
+    get:
+      tags:
+      - Customer
+      summary: Xem thông tin và trạng thái chuyến
+      operationId: getTrip
+      description: UC07 - FR18-FR24
+      parameters:
+      - in: path
+        name: tripId
+        required: true
+        type: integer
+        format: int64
+        description: Mã chuyến
+      responses:
+        '200':
+          description: Thông tin chuyến
+          schema:
+            $ref: '#/definitions/Trip'
+      security:
+      - BearerAuth: []
+  /trips/{tripId}/payments:
+    post:
+      tags:
+      - Customer
+      summary: Thanh toán chuyến đi
+      operationId: payTrip
+      description: UC10 - FR26-FR30
+      parameters:
+      - in: path
+        name: tripId
+        required: true
+        type: integer
+        format: int64
+        description: Mã chuyến
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/PaymentRequest'
+      responses:
+        '200':
+          description: Kết quả thanh toán
+          schema:
+            $ref: '#/definitions/PaymentResult'
+        '400':
+          description: Thanh toán thất bại
+      security:
+      - BearerAuth: []
+  /customers/{customerId}/trips:
+    get:
+      tags:
+      - Customer
+      summary: Xem lịch sử chuyến
+      operationId: getCustomerTripHistory
+      description: UC12 - FR34-FR35
+      parameters:
+      - in: path
+        name: customerId
+        required: true
+        type: integer
+        format: int64
+        description: Mã khách hàng
+      responses:
+        '200':
+          description: Danh sách lịch sử chuyến
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Trip'
+      security:
+      - BearerAuth: []
+  /trips/{tripId}/ratings:
+    post:
+      tags:
+      - Customer
+      summary: Đánh giá tài xế
+      operationId: rateDriver
+      description: UC12 - FR36
+      parameters:
+      - in: path
+        name: tripId
+        required: true
+        type: integer
+        format: int64
+        description: Mã chuyến
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/RatingRequest'
+      responses:
+        '201':
+          description: Đánh giá được lưu
+        '400':
+          description: Chuyến chưa hoàn thành hoặc đã có đánh giá
+      security:
+      - BearerAuth: []
+definitions:
+  CustomerRegisterRequest:
+    type: object
+    required:
+    - full_name
+    - phone
+    properties:
+      full_name:
+        type: string
+      phone:
+        type: string
+      email:
+        type: string
+        format: email
+  LoginRequest:
+    type: object
+    required:
+    - phone
+    properties:
+      phone:
+        type: string
+      password:
+        type: string
+  CustomerUpdateRequest:
+    type: object
+    properties:
+      full_name:
+        type: string
+      phone:
+        type: string
+      email:
+        type: string
+        format: email
+  TripRequest:
+    type: object
+    required:
+    - customer_id
+    - pickup_address
+    - destination_address
+    - requested_vehicle_type
+    properties:
+      customer_id:
+        type: integer
+        format: int64
+      pickup_address:
+        type: string
+      pickup_latitude:
+        type: number
+        format: double
+      pickup_longitude:
+        type: number
+        format: double
+      destination_address:
+        type: string
+      destination_latitude:
+        type: number
+        format: double
+      destination_longitude:
+        type: number
+        format: double
+      requested_vehicle_type:
+        type: string
+  Trip:
+    type: object
+    properties:
+      trip_id:
+        type: integer
+        format: int64
+      customer_id:
+        type: integer
+        format: int64
+      pickup_address:
+        type: string
+      pickup_latitude:
+        type: number
+        format: double
+      pickup_longitude:
+        type: number
+        format: double
+      destination_address:
+        type: string
+      destination_latitude:
+        type: number
+        format: double
+      destination_longitude:
+        type: number
+        format: double
+      requested_vehicle_type:
+        type: string
+      trip_status:
+        type: string
+      fare_amount:
+        type: number
+        format: double
+      requested_at:
+        type: string
+        format: date-time
+      completed_at:
+        type: string
+        format: date-time
+      cancelled_at:
+        type: string
+        format: date-time
+  PaymentRequest:
+    type: object
+    required:
+    - payment_method
+    properties:
+      payment_method:
+        type: string
+        enum:
+        - CASH
+        - ELECTRONIC
+  PaymentResult:
+    type: object
+    properties:
+      payment_id:
+        type: integer
+        format: int64
+      trip_id:
+        type: integer
+        format: int64
+      payment_method:
+        type: string
+      amount:
+        type: number
+        format: double
+      payment_status:
+        type: string
+      provider_reference:
+        type: string
+      retry_count:
+        type: integer
+      paid_at:
+        type: string
+        format: date-time
+  RatingRequest:
+    type: object
+    required:
+    - customer_id
+    - driver_id
+    - score
+    properties:
+      customer_id:
+        type: integer
+        format: int64
+      driver_id:
+        type: integer
+        format: int64
+      score:
+        type: integer
+        minimum: 1
+        maximum: 5
+      comment:
+        type: string
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'Nhập: Bearer <JWT>'
