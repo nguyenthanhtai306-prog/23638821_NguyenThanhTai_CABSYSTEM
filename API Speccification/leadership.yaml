@@ -1,0 +1,56 @@
+swagger: '2.0'
+info:
+  title: CAB System - Leadership API
+  description: Swagger API được tạo lại từ SRS CAB System.
+  version: 1.0.0
+host: localhost:8080
+basePath: /api
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/json
+tags:
+- name: Leadership
+paths:
+  /reports/operations:
+    get:
+      tags:
+      - Leadership
+      summary: Xem báo cáo hoạt động
+      operationId: getOperationsReport
+      description: UC15 - FR43
+      responses:
+        '200':
+          description: Báo cáo hoạt động
+          schema:
+            $ref: '#/definitions/OperationsReport'
+        '403':
+          description: Không có quyền xem báo cáo
+      security:
+      - BearerAuth: []
+definitions:
+  OperationsReport:
+    type: object
+    properties:
+      trip_count:
+        type: integer
+      revenue:
+        type: number
+        format: double
+      completion_rate:
+        type: number
+        format: double
+      cancellation_rate:
+        type: number
+        format: double
+      driver_effectiveness:
+        type: number
+        format: double
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'Nhập: Bearer <JWT>'
