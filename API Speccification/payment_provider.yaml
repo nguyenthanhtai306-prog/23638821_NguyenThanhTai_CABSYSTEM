@@ -1,0 +1,84 @@
+swagger: '2.0'
+info:
+  title: CAB System - Payment Provider API
+  description: Swagger API được tạo lại từ SRS CAB System.
+  version: 1.0.0
+host: localhost:8080
+basePath: /api
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/json
+tags:
+- name: Payment Provider
+paths:
+  /payments/trips/{tripId}:
+    post:
+      tags:
+      - Payment Provider
+      summary: Xử lý thanh toán điện tử và trả kết quả
+      operationId: processElectronicPayment
+      description: UC10 - FR27-FR30
+      parameters:
+      - in: path
+        name: tripId
+        required: true
+        type: integer
+        format: int64
+        description: Mã chuyến
+      - in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/PaymentRequest'
+      responses:
+        '200':
+          description: Kết quả giao dịch
+          schema:
+            $ref: '#/definitions/PaymentResult'
+        '400':
+          description: Giao dịch không hợp lệ
+      security:
+      - BearerAuth: []
+definitions:
+  PaymentRequest:
+    type: object
+    required:
+    - payment_method
+    properties:
+      payment_method:
+        type: string
+        enum:
+        - CASH
+        - ELECTRONIC
+  PaymentResult:
+    type: object
+    properties:
+      payment_id:
+        type: integer
+        format: int64
+      trip_id:
+        type: integer
+        format: int64
+      payment_method:
+        type: string
+      amount:
+        type: number
+        format: double
+      payment_status:
+        type: string
+      provider_reference:
+        type: string
+      retry_count:
+        type: integer
+      paid_at:
+        type: string
+        format: date-time
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: 'Nhập: Bearer <JWT>'
