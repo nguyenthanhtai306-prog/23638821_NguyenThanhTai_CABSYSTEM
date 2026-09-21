@@ -1,235 +1,157 @@
-# CAB System - Operator API
+# CAB System - Driver Test Cases
 
-## 1. Thông tin chung
+## TC-DRV-001 - Tạo tài khoản tài xế
 
-- **Base URL:** `http://localhost:8080/api`
-- **Version:** `1.0.0`
-- **Actor / Use Case:** ACT03 – Nhân viên vận hành; UC02, UC13, UC15
-- **Protocol:** HTTP
-- **Content-Type:** `application/json` khi có request body
-- **Authentication:** Các API có bảo mật sử dụng `Authorization: Bearer <JWT>` theo Swagger Specification.
-
-## 2. API Endpoints
-
-### POST `/drivers`
-
-**Operation ID:** `createDriver`  
-**Use Case / FR:** `UC02 - FR08`  
-**Mô tả:** Tạo tài khoản tài xế
-
-#### Request Body: `DriverRequest`
-
-| Field | Type | Required |
-|---|---|---|
-| `full_name` | string | Yes |
-| `phone` | string | Yes |
-| `vehicle_type` | string | Yes |
-| `license_plate` | string | Yes |
-| `account_status` | string | No |
-| `availability_status` | string | No |
-
-#### Response
-
-| HTTP Status | Meaning |
-|---:|---|
-| `201` | Tạo tài khoản tài xế thành công |
-| `400` | Thông tin chưa đầy đủ |
-
----
-
-### GET `/operations/trips`
-
-**Operation ID:** `getActiveTrips`  
-**Use Case / FR:** `UC13 - FR37-FR38`  
-**Mô tả:** Theo dõi các chuyến đang diễn ra
-
-#### Response
-
-| HTTP Status | Meaning |
-|---:|---|
-| `200` | Danh sách chuyến |
-
-**Response Model:** `Trip[]`
-
----
-
-### GET `/operations/transactions`
-
-**Operation ID:** `getTransactions`  
-**Use Case / FR:** `UC13 - FR39`  
-**Mô tả:** Tra cứu lịch sử giao dịch
-
-#### Response
-
-| HTTP Status | Meaning |
-|---:|---|
-| `200` | Danh sách giao dịch |
-
-**Response Model:** `PaymentResult[]`
-
----
-
-### POST `/operations/trips/{tripId}/support`
-
-**Operation ID:** `supportFailedTrip`  
-**Use Case / FR:** `UC13 - FR40`  
-**Mô tả:** Hỗ trợ xử lý chuyến bị lỗi
-
-#### Path Parameter
-
-| Parameter | Type | Required |
-|---|---|---|
-| `tripId` | integer (int64) | Yes |
-
-#### Request Body: `SupportRequest`
-
-| Field | Type | Required |
-|---|---|---|
-| `action_detail` | string | Yes |
-
-#### Response
-
-| HTTP Status | Meaning |
-|---:|---|
-| `200` | Đã tiếp nhận xử lý |
-| `403` | Không đủ quyền |
-
----
-
-### GET `/reports/operations`
-
-**Operation ID:** `getOperationsReport`  
-**Use Case / FR:** `UC15 - FR43`  
-**Mô tả:** Xem báo cáo hoạt động
-
-#### Response
-
-| HTTP Status | Meaning |
-|---:|---|
-| `200` | Báo cáo hoạt động |
-| `403` | Không có quyền xem báo cáo |
-
-**Response Model:** `OperationsReport`
-
----
-
-### POST `/system/trips/{tripId}/dispatch`
-
-**Operation ID:** `dispatchDriver`  
-**Use Case / FR:** `UC05 - FR11-FR13, FR15-FR16`  
-**Mô tả:** Tìm và phân công tài xế. API nội bộ của CAB System.
-
-#### Path Parameter
-
-| Parameter | Type | Required |
-|---|---|---|
-| `tripId` | integer (int64) | Yes |
-
-#### Response
-
-| HTTP Status | Meaning |
-|---:|---|
-| `200` | Đã gửi yêu cầu đến tài xế phù hợp |
-| `404` | Không tìm được tài xế phù hợp |
-
----
-
-### POST `/system/trips/{tripId}/fare`
-
-**Operation ID:** `calculateFare`  
-**Use Case / FR:** `UC09 - FR25`  
-**Mô tả:** Tính cước chuyến đi. API nội bộ của CAB System.
-
-#### Path Parameter
-
-| Parameter | Type | Required |
-|---|---|---|
-| `tripId` | integer (int64) | Yes |
-
-#### Response
-
-| HTTP Status | Meaning |
-|---:|---|
-| `200` | Số tiền phải trả |
-| `409` | Chuyến chưa hoàn thành hoặc công thức cước chưa được phê duyệt |
-
-**Response Model:** `Trip`
-
-## 3. Data Models
-
-### DriverRequest
-
-| Field | Type | Required |
-|---|---|---|
-| `full_name` | string | Yes |
-| `phone` | string | Yes |
-| `vehicle_type` | string | Yes |
-| `license_plate` | string | Yes |
-| `account_status` | string | No |
-| `availability_status` | string | No |
-
-### Trip
-
-| Field | Type |
+| Thuộc tính | Nội dung |
 |---|---|
-| `trip_id` | integer (int64) |
-| `customer_id` | integer (int64) |
-| `pickup_address` | string |
-| `pickup_latitude` | number (double) |
-| `pickup_longitude` | number (double) |
-| `destination_address` | string |
-| `destination_latitude` | number (double) |
-| `destination_longitude` | number (double) |
-| `requested_vehicle_type` | string |
-| `trip_status` | string |
-| `fare_amount` | number (double) |
-| `requested_at` | string (date-time) |
-| `completed_at` | string (date-time) |
-| `cancelled_at` | string (date-time) |
+| TC_ID | TC-DRV-001 |
+| Description | Kiểm tra tài xế có thể được tạo tài khoản và lưu thông tin |
+| Pre-conditions | Nhân viên vận hành có quyền tạo tài khoản |
+| Steps | 1. Tạo tài khoản tài xế. 2. Nhập hồ sơ và thông tin phương tiện. 3. Gửi yêu cầu. |
+| Test Data | `full_name`, `phone`, `vehicle_type`, `license_plate` hợp lệ |
+| Expected Result | Tài khoản, hồ sơ và thông tin phương tiện được lưu thành công. |
+| Test Result | Not Executed |
 
-### PaymentResult
+## TC-DRV-002 - Cập nhật hồ sơ và phương tiện
 
-| Field | Type |
+| Thuộc tính | Nội dung |
 |---|---|
-| `payment_id` | integer (int64) |
-| `trip_id` | integer (int64) |
-| `payment_method` | string |
-| `amount` | number (double) |
-| `payment_status` | string |
-| `provider_reference` | string |
-| `retry_count` | integer |
-| `paid_at` | string (date-time) |
+| TC_ID | TC-DRV-002 |
+| Description | Kiểm tra tài xế cập nhật hồ sơ và phương tiện |
+| Pre-conditions | Tài xế có tài khoản hợp lệ |
+| Steps | 1. Mở thông tin tài xế. 2. Cập nhật thông tin. 3. Lưu thay đổi. |
+| Test Data | Hồ sơ và phương tiện hợp lệ |
+| Expected Result | Thông tin mới được lưu thành công. |
+| Test Result | Not Executed |
 
-### SupportRequest
+## TC-DRV-003 - Tài khoản không hoạt động không được nhận chuyến
 
-| Field | Type | Required |
-|---|---|---|
-| `action_detail` | string | Yes |
-
-### OperationsReport
-
-| Field | Type |
+| Thuộc tính | Nội dung |
 |---|---|
-| `trip_count` | integer |
-| `revenue` | number (double) |
-| `completion_rate` | number (double) |
-| `cancellation_rate` | number (double) |
-| `driver_effectiveness` | number (double) |
+| TC_ID | TC-DRV-003 |
+| Description | Kiểm tra hệ thống không xem xét tài khoản tài xế không hoạt động |
+| Pre-conditions | Tài khoản tài xế ở trạng thái không hoạt động |
+| Steps | 1. Tạo một yêu cầu đặt chuyến phù hợp. 2. Thực hiện tìm tài xế. |
+| Test Data | `account_status` không hoạt động |
+| Expected Result | Tài xế không được xem xét để nhận chuyến. |
+| Test Result | Not Executed |
 
-## 4. Traceability
+## TC-AVL-001 - Tài xế cập nhật trạng thái sẵn sàng
 
-Các API trong tài liệu này giữ mã Use Case và Functional Requirement theo API Specification của repository.
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-AVL-001 |
+| Description | Kiểm tra tài xế cập nhật trạng thái sẵn sàng nhận chuyến |
+| Pre-conditions | Tài xế đã đăng nhập |
+| Steps | 1. Mở chức năng trạng thái. 2. Chọn sẵn sàng. 3. Lưu trạng thái. |
+| Test Data | `availability_status = AVAILABLE` |
+| Expected Result | Trạng thái sẵn sàng được cập nhật thành công. |
+| Test Result | Not Executed |
 
-- `createDriver` → UC02 - FR08
-- `getActiveTrips` → UC13 - FR37-FR38
-- `getTransactions` → UC13 - FR39
-- `supportFailedTrip` → UC13 - FR40
-- `getOperationsReport` → UC15 - FR43
-- `dispatchDriver` → UC05 - FR11-FR13, FR15-FR16
-- `calculateFare` → UC09 - FR25
+## TC-AVL-002 - Tài xế chuyển sang không sẵn sàng
 
-## 5. Ghi chú
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-AVL-002 |
+| Description | Kiểm tra tài xế chuyển sang không sẵn sàng |
+| Pre-conditions | Tài xế có tài khoản hợp lệ |
+| Steps | 1. Mở chức năng trạng thái. 2. Chọn không sẵn sàng. 3. Lưu. |
+| Test Data | `availability_status = UNAVAILABLE` |
+| Expected Result | Trạng thái được cập nhật thành công và tài xế không được xem xét khi tìm tài xế. |
+| Test Result | Not Executed |
 
-- Không bổ sung business rule hoặc giới hạn dữ liệu ngoài tài liệu nguồn.
-- Các API nội bộ `/system/...` thuộc CAB System theo API Specification.
-- Khi SRS/API Specification chưa quy định chi tiết thêm, tài liệu này không tự suy diễn.
+## TC-RES-001 - Tài xế chấp nhận chuyến
+
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-RES-001 |
+| Description | Kiểm tra tài xế có thể chấp nhận yêu cầu chuyến |
+| Pre-conditions | Tài xế nhận được yêu cầu chuyến |
+| Steps | 1. Tài xế xem yêu cầu. 2. Chọn chấp nhận. 3. Gửi phản hồi. |
+| Test Data | `response_status = ACCEPTED` |
+| Expected Result | Hệ thống ghi nhận phản hồi và gán chuyến cho tài xế hợp lệ. |
+| Test Result | Not Executed |
+
+## TC-RES-002 - Tài xế từ chối chuyến
+
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-RES-002 |
+| Description | Kiểm tra hệ thống tìm tài xế khác khi tài xế từ chối |
+| Pre-conditions | Tài xế nhận được yêu cầu |
+| Steps | 1. Tài xế chọn từ chối. 2. Gửi phản hồi. |
+| Test Data | `response_status = REJECTED` |
+| Expected Result | Hệ thống ghi nhận từ chối và tiếp tục tìm tài xế khác. |
+| Test Result | Not Executed |
+
+## TC-RES-003 - Tài xế không phản hồi
+
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-RES-003 |
+| Description | Kiểm tra xử lý khi tài xế không phản hồi |
+| Pre-conditions | Yêu cầu chuyến đã được gửi đến tài xế |
+| Steps | Không gửi phản hồi từ tài xế và chờ thời gian xử lý theo thiết kế MBB. |
+| Test Data | Không có phản hồi |
+| Expected Result | Hệ thống ghi nhận không phản hồi và tiếp tục tìm tài xế khác. |
+| Test Result | Not Executed |
+
+## TC-RES-004 - Nhiều tài xế cùng chấp nhận
+
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-RES-004 |
+| Description | Kiểm tra khi nhiều tài xế cùng phản hồi chấp nhận |
+| Pre-conditions | Cùng một chuyến được gửi đến nhiều tài xế |
+| Steps | 1. Tài xế A chấp nhận. 2. Tài xế B chấp nhận sau đó. |
+| Test Data | Hai phản hồi `ACCEPTED` cho cùng một chuyến |
+| Expected Result | Tài xế có phản hồi hợp lệ đầu tiên được gán; phản hồi sau không thay đổi tài xế đã chọn. |
+| Test Result | Not Executed |
+
+## TC-STATUS-001 - Cập nhật trạng thái chuyến đúng thứ tự
+
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-STATUS-001 |
+| Description | Kiểm tra trạng thái chuyến được cập nhật đúng thứ tự |
+| Pre-conditions | Chuyến đã được gán tài xế |
+| Steps | 1. Cập nhật đã đến điểm đón. 2. Cập nhật đã đón khách. 3. Cập nhật đang di chuyển. 4. Cập nhật hoàn thành. |
+| Test Data | Các trạng thái hợp lệ theo SRS |
+| Expected Result | Hệ thống lưu và hiển thị đúng thứ tự trạng thái chuyến. |
+| Test Result | Not Executed |
+
+## TC-STATUS-002 - Cập nhật trạng thái sai trình tự
+
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-STATUS-002 |
+| Description | Kiểm tra hệ thống từ chối trạng thái không hợp lệ |
+| Pre-conditions | Chuyến đang ở một trạng thái xác định |
+| Steps | Gửi trạng thái không đúng trình tự |
+| Test Data | Trạng thái không hợp lệ so với trạng thái hiện tại |
+| Expected Result | Hệ thống từ chối cập nhật trạng thái không hợp lệ và ghi nhận sự kiện theo quy định. |
+| Test Result | Not Executed |
+
+## TC-LOC-001 - Lưu vị trí tài xế
+
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-LOC-001 |
+| Description | Kiểm tra hệ thống lưu vị trí và thời điểm cập nhật |
+| Pre-conditions | Tài xế có tài khoản hợp lệ và đang hoạt động |
+| Steps | 1. Gửi thông tin vị trí. 2. Hệ thống tiếp nhận và lưu. |
+| Test Data | `latitude`, `longitude`, `recorded_at` hợp lệ |
+| Expected Result | Vị trí và thời điểm ghi nhận được lưu thành công. |
+| Test Result | Not Executed |
+
+## TC-LOC-002 - Không có vị trí mới
+
+| Thuộc tính | Nội dung |
+|---|---|
+| TC_ID | TC-LOC-002 |
+| Description | Kiểm tra xử lý khi không nhận được vị trí mới |
+| Pre-conditions | Tài xế đã có vị trí gần nhất được lưu |
+| Steps | 1. Không gửi vị trí mới. 2. Theo dõi thông tin chuyến. |
+| Test Data | Không có cập nhật vị trí mới |
+| Expected Result | Hệ thống sử dụng vị trí cuối cùng và không tự xác nhận tài xế đã đến hoặc chuyến đã hoàn thành. |
+| Test Result | Not Executed |
