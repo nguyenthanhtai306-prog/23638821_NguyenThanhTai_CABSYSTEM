@@ -1,577 +1,294 @@
-CAB System - Customer API
+# CAB System - Customer API
 
-1. Thông tin chung
+## 1. Thông tin chung
 
-Base URL: http://localhost:8080/api
+- **Base URL:** `http://localhost:8080/api`
+- **Version:** `1.0.0`
+- **Actor / Use Case:** ACT01 – Khách hàng; UC01, UC04, UC07, UC10, UC12
+- **Protocol:** HTTP
+- **Content-Type:** `application/json` khi có request body
+- **Authentication:** Các API có bảo mật sử dụng `Authorization: Bearer <JWT>` theo Swagger Specification.
 
-Version: 1.0.0
+## 2. API Endpoints
 
-Actor / Use Case: ACT01 – Khách hàng; UC01, UC04, UC07, UC10, UC12
+### POST `/customers/register`
 
-Protocol: HTTP
+**Operation ID:** `registerCustomer`  
+**Use Case / FR:** `UC01 - FR01`  
+**Mô tả:** Đăng ký tài khoản khách hàng
 
-Content-Type: application/json khi có request body
+#### Request Body: `CustomerRegisterRequest`
 
-Authentication: Các API có bảo mật sử dụng Authorization: Bearer <JWT> theo Swagger Specification.
-
-2. API Endpoints
-
-POST /customers/register
-
-Operation ID: registerCustomer
-Use Case / FR: UC01 - FR01
-Mô tả: Đăng ký tài khoản khách hàng
-
-Request Body: CustomerRegisterRequest
-
+```json
 {
   "example": "..."
 }
+```
 
-Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
+> Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
 
-Response
+#### Response
 
-HTTP Status
+| HTTP Status | Meaning |
+|---:|---|
+| `201` | Tài khoản được tạo |
+| `400` | Thông tin không hợp lệ |
 
-Meaning
+### POST `/customers/login`
 
-201
+**Operation ID:** `loginCustomer`  
+**Use Case / FR:** `UC01 - FR02`  
+**Mô tả:** Đăng nhập khách hàng
 
-Tài khoản được tạo
+#### Request Body: `LoginRequest`
 
-400
-
-Thông tin không hợp lệ
-
-POST /customers/login
-
-Operation ID: loginCustomer
-Use Case / FR: UC01 - FR02
-Mô tả: Đăng nhập khách hàng
-
-Request Body: LoginRequest
-
+```json
 {
   "example": "..."
 }
+```
 
-Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
+> Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
 
-Response
+#### Response
 
-HTTP Status
+| HTTP Status | Meaning |
+|---:|---|
+| `200` | Đăng nhập thành công |
+| `401` | Xác thực không thành công |
 
-Meaning
+### PUT `/customers/{customerId}`
 
-200
+**Operation ID:** `updateCustomer`  
+**Use Case / FR:** `UC01 - FR03`  
+**Mô tả:** Cập nhật thông tin khách hàng
 
-Đăng nhập thành công
+#### Path Parameter
 
-401
+| Parameter | Type | Required |
+|---|---|---|
+| `customerId` | integer (int64) | Yes |
 
-Xác thực không thành công
+#### Request Body: `CustomerUpdateRequest`
 
-PUT /customers/{customerId}
-
-Operation ID: updateCustomer
-Use Case / FR: UC01 - FR03
-Mô tả: Cập nhật thông tin khách hàng
-
-Path Parameter
-
-Parameter
-
-Type
-
-Required
-
-customerId
-
-integer (int64)
-
-Yes
-
-Request Body: CustomerUpdateRequest
-
+```json
 {
   "example": "..."
 }
+```
 
-Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
+> Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
 
-Response
+#### Response
 
-HTTP Status
+| HTTP Status | Meaning |
+|---:|---|
+| `200` | Cập nhật thành công |
+| `400` | Thông tin không hợp lệ |
 
-Meaning
+### POST `/trips`
 
-200
+**Operation ID:** `createTrip`  
+**Use Case / FR:** `UC04 - FR04-FR07`  
+**Mô tả:** Tạo yêu cầu đặt chuyến
 
-Cập nhật thành công
+#### Request Body: `TripRequest`
 
-400
-
-Thông tin không hợp lệ
-
-POST /trips
-
-Operation ID: createTrip
-Use Case / FR: UC04 - FR04-FR07
-Mô tả: Tạo yêu cầu đặt chuyến
-
-Request Body: TripRequest
-
+```json
 {
   "example": "..."
 }
+```
 
-Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
+> Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
 
-Response
+#### Response
 
-HTTP Status
+| HTTP Status | Meaning |
+|---:|---|
+| `201` | Yêu cầu được tiếp nhận |
+| `400` | Thiếu hoặc sai thông tin |
 
-Meaning
+### GET `/trips/{tripId}`
 
-201
+**Operation ID:** `getTrip`  
+**Use Case / FR:** `UC07 - FR18-FR24`  
+**Mô tả:** Xem thông tin và trạng thái chuyến
 
-Yêu cầu được tiếp nhận
+#### Path Parameter
 
-400
+| Parameter | Type | Required |
+|---|---|---|
+| `tripId` | integer (int64) | Yes |
 
-Thiếu hoặc sai thông tin
+#### Response
 
-GET /trips/{tripId}
+| HTTP Status | Meaning |
+|---:|---|
+| `200` | Thông tin chuyến |
 
-Operation ID: getTrip
-Use Case / FR: UC07 - FR18-FR24
-Mô tả: Xem thông tin và trạng thái chuyến
+### POST `/trips/{tripId}/payments`
 
-Path Parameter
+**Operation ID:** `payTrip`  
+**Use Case / FR:** `UC10 - FR26-FR30`  
+**Mô tả:** Thanh toán chuyến đi
 
-Parameter
+#### Path Parameter
 
-Type
+| Parameter | Type | Required |
+|---|---|---|
+| `tripId` | integer (int64) | Yes |
 
-Required
+#### Request Body: `PaymentRequest`
 
-tripId
-
-integer (int64)
-
-Yes
-
-Response
-
-HTTP Status
-
-Meaning
-
-200
-
-Thông tin chuyến
-
-POST /trips/{tripId}/payments
-
-Operation ID: payTrip
-Use Case / FR: UC10 - FR26-FR30
-Mô tả: Thanh toán chuyến đi
-
-Path Parameter
-
-Parameter
-
-Type
-
-Required
-
-tripId
-
-integer (int64)
-
-Yes
-
-Request Body: PaymentRequest
-
+```json
 {
   "example": "..."
 }
+```
 
-Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
+> Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
 
-Response
+#### Response
 
-HTTP Status
+| HTTP Status | Meaning |
+|---:|---|
+| `200` | Kết quả thanh toán |
+| `400` | Thanh toán thất bại |
 
-Meaning
+### GET `/customers/{customerId}/trips`
 
-200
+**Operation ID:** `getCustomerTripHistory`  
+**Use Case / FR:** `UC12 - FR34-FR35`  
+**Mô tả:** Xem lịch sử chuyến
 
-Kết quả thanh toán
+#### Path Parameter
 
-400
+| Parameter | Type | Required |
+|---|---|---|
+| `customerId` | integer (int64) | Yes |
 
-Thanh toán thất bại
+#### Response
 
-GET /customers/{customerId}/trips
+| HTTP Status | Meaning |
+|---:|---|
+| `200` | Danh sách lịch sử chuyến |
 
-Operation ID: getCustomerTripHistory
-Use Case / FR: UC12 - FR34-FR35
-Mô tả: Xem lịch sử chuyến
+### POST `/trips/{tripId}/ratings`
 
-Path Parameter
+**Operation ID:** `rateDriver`  
+**Use Case / FR:** `UC12 - FR36`  
+**Mô tả:** Đánh giá tài xế
 
-Parameter
+#### Path Parameter
 
-Type
+| Parameter | Type | Required |
+|---|---|---|
+| `tripId` | integer (int64) | Yes |
 
-Required
+#### Request Body: `RatingRequest`
 
-customerId
-
-integer (int64)
-
-Yes
-
-Response
-
-HTTP Status
-
-Meaning
-
-200
-
-Danh sách lịch sử chuyến
-
-POST /trips/{tripId}/ratings
-
-Operation ID: rateDriver
-Use Case / FR: UC12 - FR36
-Mô tả: Đánh giá tài xế
-
-Path Parameter
-
-Parameter
-
-Type
-
-Required
-
-tripId
-
-integer (int64)
-
-Yes
-
-Request Body: RatingRequest
-
+```json
 {
   "example": "..."
 }
-
-Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
-
-Response
-
-HTTP Status
-
-Meaning
-
-201
-
-Đánh giá được lưu
-
-400
-
-Chuyến chưa hoàn thành hoặc đã có đánh giá
-
-3. Data Models
-
-CustomerRegisterRequest
-
-Field
-
-Type
-
-Required
-
-full_name
-
-string
-
-Yes
-
-phone
-
-string
-
-Yes
-
-email
-
-string (email)
-
-No
-
-LoginRequest
-
-Field
-
-Type
-
-Required
-
-phone
-
-string
-
-Yes
-
-password
-
-string
-
-No
-
-CustomerUpdateRequest
-
-Field
-
-Type
-
-Required
-
-full_name
-
-string
-
-No
-
-phone
-
-string
-
-No
-
-email
-
-string (email)
-
-No
-
-TripRequest
-
-Field
-
-Type
-
-Required
-
-customer_id
-
-integer (int64)
-
-Yes
-
-pickup_address
-
-string
-
-Yes
-
-pickup_latitude
-
-number (double)
-
-No
-
-pickup_longitude
-
-number (double)
-
-No
-
-destination_address
-
-string
-
-Yes
-
-destination_latitude
-
-number (double)
-
-No
-
-destination_longitude
-
-number (double)
-
-No
-
-requested_vehicle_type
-
-string
-
-Yes
-
-Trip
-
-Field
-
-Type
-
-trip_id
-
-integer (int64)
-
-customer_id
-
-integer (int64)
-
-pickup_address
-
-string
-
-pickup_latitude
-
-number (double)
-
-pickup_longitude
-
-number (double)
-
-destination_address
-
-string
-
-destination_latitude
-
-number (double)
-
-destination_longitude
-
-number (double)
-
-requested_vehicle_type
-
-string
-
-trip_status
-
-string
-
-fare_amount
-
-number (double)
-
-requested_at
-
-string (date-time)
-
-completed_at
-
-string (date-time)
-
-cancelled_at
-
-string (date-time)
-
-PaymentRequest
-
-Field
-
-Type
-
-Required
-
-payment_method
-
-string
-
-Yes
-
-Allowed values: CASH, ELECTRONIC.
-
-PaymentResult
-
-Field
-
-Type
-
-payment_id
-
-integer (int64)
-
-trip_id
-
-integer (int64)
-
-payment_method
-
-string
-
-amount
-
-number (double)
-
-payment_status
-
-string
-
-provider_reference
-
-string
-
-retry_count
-
-integer
-
-paid_at
-
-string (date-time)
-
-RatingRequest
-
-Field
-
-Type
-
-Required
-
-customer_id
-
-integer (int64)
-
-Yes
-
-driver_id
-
-integer (int64)
-
-Yes
-
-score
-
-integer
-
-Yes
-
-comment
-
-string
-
-No
-
-score: minimum 1, maximum 5.
-
-4. Traceability
+```
+
+> Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
+
+#### Response
+
+| HTTP Status | Meaning |
+|---:|---|
+| `201` | Đánh giá được lưu |
+| `400` | Chuyến chưa hoàn thành hoặc đã có đánh giá |
+
+## 3. Data Models
+
+### CustomerRegisterRequest
+| Field | Type | Required |
+|---|---|---|
+| `full_name` | string | Yes |
+| `phone` | string | Yes |
+| `email` | string (email) | No |
+
+### LoginRequest
+| Field | Type | Required |
+|---|---|---|
+| `phone` | string | Yes |
+| `password` | string | No |
+
+### CustomerUpdateRequest
+| Field | Type | Required |
+|---|---|---|
+| `full_name` | string | No |
+| `phone` | string | No |
+| `email` | string (email) | No |
+
+### TripRequest
+| Field | Type | Required |
+|---|---|---|
+| `customer_id` | integer (int64) | Yes |
+| `pickup_address` | string | Yes |
+| `pickup_latitude` | number (double) | No |
+| `pickup_longitude` | number (double) | No |
+| `destination_address` | string | Yes |
+| `destination_latitude` | number (double) | No |
+| `destination_longitude` | number (double) | No |
+| `requested_vehicle_type` | string | Yes |
+
+### Trip
+| Field | Type |
+|---|---|
+| `trip_id` | integer (int64) |
+| `customer_id` | integer (int64) |
+| `pickup_address` | string |
+| `pickup_latitude` | number (double) |
+| `pickup_longitude` | number (double) |
+| `destination_address` | string |
+| `destination_latitude` | number (double) |
+| `destination_longitude` | number (double) |
+| `requested_vehicle_type` | string |
+| `trip_status` | string |
+| `fare_amount` | number (double) |
+| `requested_at` | string (date-time) |
+| `completed_at` | string (date-time) |
+| `cancelled_at` | string (date-time) |
+
+### PaymentRequest
+| Field | Type | Required |
+|---|---|---|
+| `payment_method` | string | Yes |
+
+Allowed values: `CASH`, `ELECTRONIC`.
+
+### PaymentResult
+| Field | Type |
+|---|---|
+| `payment_id` | integer (int64) |
+| `trip_id` | integer (int64) |
+| `payment_method` | string |
+| `amount` | number (double) |
+| `payment_status` | string |
+| `provider_reference` | string |
+| `retry_count` | integer |
+| `paid_at` | string (date-time) |
+
+### RatingRequest
+| Field | Type | Required |
+|---|---|---|
+| `customer_id` | integer (int64) | Yes |
+| `driver_id` | integer (int64) | Yes |
+| `score` | integer | Yes |
+| `comment` | string | No |
+
+`score`: minimum 1, maximum 5.
+
+## 4. Traceability
 
 Các API trong tài liệu này giữ mã Use Case và Functional Requirement theo API Specification của repository.
 
-5. Ghi chú
+## 5. Ghi chú
 
-Không bổ sung business rule hoặc giới hạn dữ liệu ngoài tài liệu nguồn.
-
-Khi SRS/API Specification chưa quy định giá trị cụ thể, tài liệu này không tự suy diễn.
+- Không bổ sung business rule hoặc giới hạn dữ liệu ngoài tài liệu nguồn.
+- Khi SRS/API Specification chưa quy định giá trị cụ thể, tài liệu này không tự suy diễn.
