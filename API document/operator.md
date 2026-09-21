@@ -19,13 +19,14 @@
 
 #### Request Body: `DriverRequest`
 
-```json
-{
-  "example": "..."
-}
-```
-
-> Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
+| Field | Type | Required |
+|---|---|---|
+| `full_name` | string | Yes |
+| `phone` | string | Yes |
+| `vehicle_type` | string | Yes |
+| `license_plate` | string | Yes |
+| `account_status` | string | No |
+| `availability_status` | string | No |
 
 #### Response
 
@@ -33,6 +34,8 @@
 |---:|---|
 | `201` | Tạo tài khoản tài xế thành công |
 | `400` | Thông tin chưa đầy đủ |
+
+---
 
 ### GET `/operations/trips`
 
@@ -46,6 +49,10 @@
 |---:|---|
 | `200` | Danh sách chuyến |
 
+**Response Model:** `Trip[]`
+
+---
+
 ### GET `/operations/transactions`
 
 **Operation ID:** `getTransactions`  
@@ -57,6 +64,10 @@
 | HTTP Status | Meaning |
 |---:|---|
 | `200` | Danh sách giao dịch |
+
+**Response Model:** `PaymentResult[]`
+
+---
 
 ### POST `/operations/trips/{tripId}/support`
 
@@ -72,13 +83,9 @@
 
 #### Request Body: `SupportRequest`
 
-```json
-{
-  "example": "..."
-}
-```
-
-> Payload fields are defined in the schema section below. Values shown above are placeholders, not business requirements.
+| Field | Type | Required |
+|---|---|---|
+| `action_detail` | string | Yes |
 
 #### Response
 
@@ -86,6 +93,8 @@
 |---:|---|
 | `200` | Đã tiếp nhận xử lý |
 | `403` | Không đủ quyền |
+
+---
 
 ### GET `/reports/operations`
 
@@ -100,23 +109,105 @@
 | `200` | Báo cáo hoạt động |
 | `403` | Không có quyền xem báo cáo |
 
+**Response Model:** `OperationsReport`
+
+---
+
+### POST `/system/trips/{tripId}/dispatch`
+
+**Operation ID:** `dispatchDriver`  
+**Use Case / FR:** `UC05 - FR11-FR13, FR15-FR16`  
+**Mô tả:** Tìm và phân công tài xế. API nội bộ của CAB System.
+
+#### Path Parameter
+
+| Parameter | Type | Required |
+|---|---|---|
+| `tripId` | integer (int64) | Yes |
+
+#### Response
+
+| HTTP Status | Meaning |
+|---:|---|
+| `200` | Đã gửi yêu cầu đến tài xế phù hợp |
+| `404` | Không tìm được tài xế phù hợp |
+
+---
+
+### POST `/system/trips/{tripId}/fare`
+
+**Operation ID:** `calculateFare`  
+**Use Case / FR:** `UC09 - FR25`  
+**Mô tả:** Tính cước chuyến đi. API nội bộ của CAB System.
+
+#### Path Parameter
+
+| Parameter | Type | Required |
+|---|---|---|
+| `tripId` | integer (int64) | Yes |
+
+#### Response
+
+| HTTP Status | Meaning |
+|---:|---|
+| `200` | Số tiền phải trả |
+| `409` | Chuyến chưa hoàn thành hoặc công thức cước chưa được phê duyệt |
+
+**Response Model:** `Trip`
+
 ## 3. Data Models
 
 ### DriverRequest
-Dùng cùng cấu trúc `DriverRequest` của Driver API.
+
+| Field | Type | Required |
+|---|---|---|
+| `full_name` | string | Yes |
+| `phone` | string | Yes |
+| `vehicle_type` | string | Yes |
+| `license_plate` | string | Yes |
+| `account_status` | string | No |
+| `availability_status` | string | No |
 
 ### Trip
-Dùng cùng cấu trúc `Trip` của Customer API.
+
+| Field | Type |
+|---|---|
+| `trip_id` | integer (int64) |
+| `customer_id` | integer (int64) |
+| `pickup_address` | string |
+| `pickup_latitude` | number (double) |
+| `pickup_longitude` | number (double) |
+| `destination_address` | string |
+| `destination_latitude` | number (double) |
+| `destination_longitude` | number (double) |
+| `requested_vehicle_type` | string |
+| `trip_status` | string |
+| `fare_amount` | number (double) |
+| `requested_at` | string (date-time) |
+| `completed_at` | string (date-time) |
+| `cancelled_at` | string (date-time) |
 
 ### PaymentResult
-Dùng cùng cấu trúc `PaymentResult` của Customer API.
+
+| Field | Type |
+|---|---|
+| `payment_id` | integer (int64) |
+| `trip_id` | integer (int64) |
+| `payment_method` | string |
+| `amount` | number (double) |
+| `payment_status` | string |
+| `provider_reference` | string |
+| `retry_count` | integer |
+| `paid_at` | string (date-time) |
 
 ### SupportRequest
+
 | Field | Type | Required |
 |---|---|---|
 | `action_detail` | string | Yes |
 
 ### OperationsReport
+
 | Field | Type |
 |---|---|
 | `trip_count` | integer |
@@ -129,7 +220,16 @@ Dùng cùng cấu trúc `PaymentResult` của Customer API.
 
 Các API trong tài liệu này giữ mã Use Case và Functional Requirement theo API Specification của repository.
 
+- `createDriver` → UC02 - FR08
+- `getActiveTrips` → UC13 - FR37-FR38
+- `getTransactions` → UC13 - FR39
+- `supportFailedTrip` → UC13 - FR40
+- `getOperationsReport` → UC15 - FR43
+- `dispatchDriver` → UC05 - FR11-FR13, FR15-FR16
+- `calculateFare` → UC09 - FR25
+
 ## 5. Ghi chú
 
 - Không bổ sung business rule hoặc giới hạn dữ liệu ngoài tài liệu nguồn.
-- Khi SRS/API Specification chưa quy định giá trị cụ thể, tài liệu này không tự suy diễn.
+- Các API nội bộ `/system/...` thuộc CAB System theo API Specification.
+- Khi SRS/API Specification chưa quy định chi tiết thêm, tài liệu này không tự suy diễn.
